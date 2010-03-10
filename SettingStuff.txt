@@ -1,0 +1,38 @@
+
+=====
+Temp block
+
+ubuntu用户
+终端输入：
+$sudo gedit /etc/hosts
+打开文件在最后添加：
+127.0.0.1 widgets.fbshare.me
+127.0.0.1 w.sharethis.com
+127.0.0.1 tweetmeme.com
+127.0.0.1 static.ak.connect.facebook.com
+
+xp用户
+用记事本打开C:\windows\system32\drivers\etc 位置的hosts文件
+文件末尾添加
+127.0.0.1 widgets.fbshare.me
+127.0.0.1 w.sharethis.com
+127.0.0.1 tweetmeme.com
+127.0.0.1 static.ak.connect.facebook.com
+
+
+win7用户也是修改hosts
+以下方法为经过实验：
+方法一：
+用Administrator账号登陆
+记事本打开C:\windows\system32\drivers\etc 位置的hosts文件
+（记事本打开方法就是点开一个记事本 然后把hosts文件拖拽过去）
+添加
+127.0.0.1 widgets.fbshare.me
+127.0.0.1 w.sharethis.com
+127.0.0.1 tweetmeme.com
+127.0.0.1 static.ak.connect.facebook.com
+方法二：
+打开C:\windows\system32\drivers\etc
+找到hosts文件
+先把它复制到其他文件夹再编辑,然后再替换原文件
+===========

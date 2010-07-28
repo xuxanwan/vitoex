@@ -7,12 +7,11 @@ package org.vito.c5;
 import org.vito.simpletest.*;
 
 class Cake {
-  static Test monitor = new Test();
-  public static void main(String[] args) {
-    Pie x = new Pie();
-    x.f();
-    monitor.expect(new String[] {
-      "Pie.f()"
-    });
-  }
-} ///:~
+	static Test monitor = new Test();
+
+	public static void main(String[] args) {
+		Pie x = new Pie();
+		x.f();
+		monitor.expect(new String[] { "Pie.f()" });
+	}
+} // /:~

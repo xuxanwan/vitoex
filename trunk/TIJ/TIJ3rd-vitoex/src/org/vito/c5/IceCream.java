@@ -6,15 +6,17 @@ package org.vito.c5;
 // www.BruceEckel.com. See copyright notice in CopyRight.txt.
 
 class Sundae {
-  private Sundae() {}
-  static Sundae makeASundae() {
-    return new Sundae();
-  }
+	private Sundae() {
+	}
+
+	static Sundae makeASundae() {
+		return new Sundae();
+	}
 }
 
 public class IceCream {
-  public static void main(String[] args) {
-    // Sundae x = new Sundae();
-    Sundae x = Sundae.makeASundae();
-  }
-} ///:~
+	public static void main(String[] args) {
+		// Sundae x = new Sundae();
+		Sundae x = Sundae.makeASundae();
+	}
+} // /:~

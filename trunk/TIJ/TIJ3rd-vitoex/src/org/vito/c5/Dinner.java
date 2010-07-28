@@ -8,15 +8,16 @@ import org.vito.simpletest.*;
 import org.vito.c5.dessert.*;
 
 public class Dinner {
-  static Test monitor = new Test();
-  public Dinner() {
-   System.out.println("Dinner constructor");
-  }
-  public static void main(String[] args) {
-    Cookie x = new Cookie();
-    // x.bite(); // Can't access
-    monitor.expect(new String[] {
-      "Cookie constructor"
-    });
-  }
-} ///:~
+	static Test monitor = new Test();
+
+	public Dinner() {
+		System.out.println("Dinner constructor");
+	}
+
+	public static void main(String[] args) {
+		Cookie x = new Cookie();
+		// x.bite(); // Can't access
+//		x.biteWithPro();
+		monitor.expect(new String[] { "Cookie constructor" });
+	}
+} // /:~

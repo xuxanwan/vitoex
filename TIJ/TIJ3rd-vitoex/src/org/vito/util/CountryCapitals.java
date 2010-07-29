@@ -3,7 +3,17 @@
 // www.BruceEckel.com. See copyright notice in CopyRight.txt.
 package org.vito.util;
 
+/**
+ * 一个提供国家和首都的类.
+ * @author vito
+ *
+ */
 public class CountryCapitals {
+	/**
+	 * 包含国家和对应首都的二维数组.
+	 * 第一维每一个是一组国家,首都序列.
+	 * 第二维的第一个是国家,第二个是首都.
+	 */
 	public static final String[][] pairs = {
 			// Africa
 			{ "ALGERIA", "Algiers" },

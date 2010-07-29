@@ -179,7 +179,10 @@ public class Arrays2 {
 		for (int i = from; i < to; i++)
 			a[i] = gen.next();
 	}
-
+	
+	/**
+	 * 随机对象实例.
+	 */
 	private static Random r = new Random();
 
 	public static class RandBooleanGenerator implements BooleanGenerator {
@@ -194,23 +197,49 @@ public class Arrays2 {
 		}
 	}
 
+	/**
+	 * 字母表的字符串.大小写A-Z,a-z.
+	 */
 	private static String ssource = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	/**
+	 * 字母表的字符数组.
+	 */
 	private static char[] src = ssource.toCharArray();
 
+	/**
+	 * 随机字符生成器.
+	 * @author vito
+	 *
+	 */
 	public static class RandCharGenerator implements CharGenerator {
+		/**
+		 * 返回一个随机的字母.
+		 */
 		public char next() {
 			return src[r.nextInt(src.length)];
 		}
 	}
 
+	/**
+	 * 随机字符串生成器.
+	 * @author vito
+	 *
+	 */
 	public static class RandStringGenerator implements Generator {
 		private int len;
 		private RandCharGenerator cg = new RandCharGenerator();
-
+		
+		/**
+		 * 给定大小的构造方法.
+		 * @param length
+		 */
 		public RandStringGenerator(int length) {
 			len = length;
 		}
-
+		
+		/**
+		 * 实现接口的方法,这里生成一个随机的字符串(大小写字母构成).
+		 */
 		public Object next() {
 			char[] buf = new char[len];
 			for (int i = 0; i < len; i++)
@@ -219,6 +248,11 @@ public class Arrays2 {
 		}
 	}
 
+	/**
+	 * 
+	 * @author vito
+	 *
+	 */
 	public static class RandShortGenerator implements ShortGenerator {
 		public short next() {
 			return (short) r.nextInt();

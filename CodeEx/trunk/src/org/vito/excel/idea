@@ -28,3 +28,14 @@ bj表,抽取的是LC编号一列(BJLC). 与pa表的匹配:
 两者lc不匹配, 则用BJLC与pa表的barcode1,lc编号,ln编号,sn编号匹配. 
 	(依次匹配,包括BJLC去头4个0的字串的第二轮匹配)
 
+
+
+		List matchedPNs = new ArrayList(); //匹配的所有编号
+		List []matchedRowsInSheet1;  //从工作表1中抽取的匹配编号所在行包含的内容
+		List []matchedRowsInSheet2;  
+		
+		Sheet matchedExportSheet1; //将表1所有匹配的行导出的新表
+		Sheet matchedExportSheet2; 
+		Sheet summaryExportSheet;  //统计相关信息的导出新表
+		
+		Workbook exportedBook;  //导出的工作薄

@@ -3,11 +3,16 @@ package org.vito.excel;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.write.DateFormat;
+import jxl.write.DateTime;
 import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.NumberFormat;
@@ -23,7 +28,7 @@ import jxl.write.biff.RowsExceededException;
 public class ExcelTest {
 
 	public static void main(String args[]){
-		File f = new File("D:/MyDocs/eclipse/experiment/CodeEx/src/org/vito/resources/Book1.xls");
+		File f = new File("D:/MyDocs/eclipse/experiment/CodeEx/src/org/vito/resources/Book1.xls");		
 		Workbook workbook1 = null;	
 		try {
 			workbook1 = Workbook.getWorkbook(f);			
@@ -41,20 +46,25 @@ public class ExcelTest {
 //		String b3Content = b3.getContents();
 //		System.out.println(b3Content);
 		
-		int PNCount = sheet.getRows();
+		int sheetRows = sheet.getRows();
+		System.out.println("sheet read out rows: "+sheetRows);
 		
 		Cell []partNumberCells = sheet.getColumn(1);  //
-		String []partNumbers = new String[PNCount];		
+		String []partNumbers = new String[sheetRows];		
 		
-		List PNList = new ArrayList();
-		for(int i = 0; i < partNumbers.length; i++){
-			PNList.add(partNumbers[i]);
-		}		
+		List<String> PNList = new ArrayList<String>();
+//		for(int i = 0; i < partNumbers.length; i++){
+//			PNList.add(partNumbers[i]);
+//		}
+//		PNList = Arrays.asList(partNumbers);
 	
-		for(int i=0;i<PNCount;i++){			
-			partNumbers[i]=partNumberCells[i].getContents();
-			System.out.println(partNumbers[i]);
-			
+		for(int i=0;i<sheetRows;i++){			
+			String readOut = partNumberCells[i].getContents();
+			System.out.println(readOut);
+			if(readOut != null && !readOut.equals("")){
+//				partNumbers[i] = readOut;
+				PNList.add(readOut);
+			}			
 //			if(partNumbers[i].equals("00001123338AD")){  //找匹配
 //				matchedPNs.add(partNumbers[i]);
 //				Cell []currentRowCells = sheet.getRow(i);
@@ -65,12 +75,16 @@ public class ExcelTest {
 //				}
 //			}			
 		}	
+		System.out.println(PNList);
+		System.out.println("contents size: " + PNList.size());
+		
 		workbook1.close();
 		
 		///
 		
 		WritableWorkbook workbook2 = null;
 		f = new File("D:/MyDocs/eclipse/experiment/CodeEx/src/org/vito/resources/output.xls");
+		
 		try {
 			workbook2 = Workbook.createWorkbook(f);
 		} catch (IOException e) {
@@ -88,6 +102,10 @@ public class ExcelTest {
 		NumberFormat fivedpa = new NumberFormat("0.00000");
 		WritableCellFormat fivedpsFormat = new WritableCellFormat(fivedps); 
 		WritableCellFormat fivedpaFormat = new WritableCellFormat(fivedpa);
+		WritableCellFormat fivedpaFormatFont = new WritableCellFormat(arial9font,fivedpa);		
+		
+		DateFormat customDateFormat = new DateFormat ("dd MMM yyyy hh:mm:ss");
+		WritableCellFormat dateFormat = new WritableCellFormat (customDateFormat); 
 		
 		try {
 			wrapFormat.setWrap(true);
@@ -102,12 +120,17 @@ public class ExcelTest {
 		Label label3 = new Label(2, 0, "Another Arial 9 point label", arial9format); //C1
 		Label label4 = new Label(0,0,"label in arial 9, wrapped",wrapFormat);
 		Label label5 = new Label(2,0,"00003232A32",wrapFormat);  // 以字符串显示吧
+		Label label6 = new Label(3,0,"00032032000",wrapFormat);
 		Number number1 = new Number(2,4,0004,textFormat);  // faint ...
 		Number number = new Number(3, 4, 3.1459);  //第四列,第五行.D5	
 		Number number2 = new Number(4,4,4.2352,integerFormat);
 		Number number3 = new Number(5,4,3.443500,floatFormat);
 		Number number4 = new Number(6,4,3.443500,fivedpsFormat);
 		Number number5 = new Number(7,4,3.443500,fivedpaFormat);
+		Number number6 = new Number(8,4,3.432100,fivedpaFormatFont);
+		
+		Date now = Calendar.getInstance().getTime();
+		DateTime dateCell = new DateTime(0, 1, now, dateFormat); 
 		
 		try {
 			matchedBJSheet.addCell(label);
@@ -116,11 +139,14 @@ public class ExcelTest {
 			matchedBJSheet.addCell(label3);
 			matchedBJSheet.addCell(label4);
 			matchedBJSheet.addCell(label5);
+			matchedBJSheet.addCell(label6);
 			matchedBJSheet.addCell(number2);
 			matchedBJSheet.addCell(number1);
 			matchedBJSheet.addCell(number3);
 			matchedBJSheet.addCell(number4);
 			matchedBJSheet.addCell(number5);
+			matchedBJSheet.addCell(number6);
+			matchedBJSheet.addCell(dateCell);
 		} catch (RowsExceededException e) {
 			e.printStackTrace();
 		} catch (WriteException e) {

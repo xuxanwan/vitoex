@@ -14,6 +14,16 @@ public class Constants {
 	public static final int SN_COLUMN_INDEX = 4;
 	
 	/**
+	 * BJ表中表头所在行下标
+	 */
+	public static final int BJ_SHEET_HEAD_ROWINDEX = 0;
+	
+	/**
+	 * PA表中表头所在行下标
+	 */
+	public static final int PA_SHEET_HEAD_ROWINDEX = 10;
+	
+	/**
 	 * BJ部件表中,为了越过所在列的列名而越过的行数.
 	 */
 	public static final int BJ_STEPPING = 1;
@@ -22,8 +32,34 @@ public class Constants {
 	 */
 	public static final int PA_STEPPING = 11;
 	
+	/**
+	 * BJ表中,有效数据的列的数量.
+	 */
+	public static final int BJ_VALID_COLUMN_COUNT = 14;
+	
+	/**
+	 * PA表中,有效数据的列的数量.
+	 */
+	public static final int PA_VALID_COLUMN_COUNT = 16;
+	
 	public static final String BJPARTS_SHEET_NAME = "Sheet1";
 	public static final String CARDREADER_SHEET_NAME = "Cardreader-Barry";
+	public static final String PCI_SHEET_NAME = "PCI Adapter-barry";
+	
+	/**
+	 * BJ物料表.
+	 */
+	public static final String BJ_SHEET = "BJ";
+	
+	/**
+	 * PA工作表
+	 */
+	public static final String PA_SHEET = "PA";
+	
+	/**
+	 * BJ表中的LC编号
+	 */
+	public static final String BJLC_CODENAME = "BJLC";
 	
 	/**
 	 * PA表中的BJ物料编号.

@@ -46,3 +46,8 @@ bj表,抽取的是LC编号一列(BJLC). 与pa表的匹配:
 		Sheet summaryExportSheet;  //统计相关信息的导出新表
 		
 		Workbook exportedBook;  //导出的工作薄
+		
+=========
+TO DO
+1.改写对比的方法
+2.改写输出的方式.

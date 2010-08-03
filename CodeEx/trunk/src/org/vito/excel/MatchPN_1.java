@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+
 import jxl.*; 
 import jxl.read.biff.BiffException;
 import jxl.write.Label;
@@ -92,19 +94,22 @@ public class MatchPN_1 {
 	 * @return
 	 */
 	public List getBJLCList(Workbook BJBook, String sheetName){
-		Sheet BJSheet = BJBook.getSheet(sheetName);
-		List BJLCList = new ArrayList();
-		Cell []BJLCCells = BJSheet.getColumn(Constants.BJLC_COLUMN_INDEX); 
-		int BJSheetRows = BJSheet.getRows();
-		for(int i=Constants.BJ_STEPPING ; i<BJSheetRows; i++){  //越过该列列名,即越过1行
-//			String readOut = BJLCCells[i].getContents();
-//			if(readOut != null && !readOut.equals("")){
-//				BJLCList.add(readOut);
-//			}
-			add2List(BJLCList, BJLCCells[i].getContents());
-		}
+//		Sheet BJSheet = BJBook.getSheet(sheetName);
+//		List BJLCList = new ArrayList();
+//		Cell []BJLCCells = BJSheet.getColumn(Constants.BJLC_COLUMN_INDEX); 
+//		int BJSheetRows = BJSheet.getRows();
+//		for(int i=Constants.BJ_STEPPING ; i<BJSheetRows; i++){  //越过该列列名,即越过1行
+////			String readOut = BJLCCells[i].getContents();
+////			if(readOut != null && !readOut.equals("")){
+////				BJLCList.add(readOut);
+////			}
+//			add2List(BJLCList, BJLCCells[i].getContents());
+//		}
+//		
+//		return BJLCList;
 		
-		return BJLCList;
+		return getColumnContents(BJBook, sheetName, 
+				Constants.BJLC_COLUMN_INDEX, Constants.BJ_SHEET);
 	}
 	
 	/**
@@ -148,7 +153,7 @@ public class MatchPN_1 {
 	 * @return
 	 */
 	public List getPNRecords(Workbook PABook, String sheetName){
-		List pnRecord = new ArrayList();
+		List pnRecord = null;
 		List pnRecords = new ArrayList();
 		List BJPNList = new ArrayList();
 		List LCPNList = new ArrayList();
@@ -171,14 +176,14 @@ public class MatchPN_1 {
 					(bar != null && bar != "") || 
 					(sn != null && sn != "") ||
 					(lc != null && lc != "")){
+				pnRecord = new ArrayList(); // 重新初始化
 				pnRecord.add(bjpn);
 				pnRecord.add(bar);
 				pnRecord.add(sn);
 				pnRecord.add(lc);
-			}
-			pnRecords.add(pnRecord);
-		}
-		
+				pnRecords.add(pnRecord);
+			}			
+		}		
 		return pnRecords;
 	}
 	
@@ -307,7 +312,80 @@ public class MatchPN_1 {
 	}
 	
 	/**
-	 * 先构造横向值(代表一条记录), 再与BJLC列表比较.
+	 * 把BJLC和PA表中的BJPN进行比较. ?
+	 * 并把比较的结果(匹配的编号)填充入匹配列表封装.
+	 * @param BJPNList
+	 */
+	public List compareBJPN(List BJPNList){
+		matchedList = new ArrayList();	
+		
+		for(int i=0; i<BJLCList.size(); i++){
+			String BJLC = (String) BJLCList.get(i);
+			
+			for(int j=0; j<BJPNList.size(); j++){
+				String BJPN = (String) BJPNList.get(j);
+				
+				if(isMatched(BJLC, BJPN)){
+					fillMatchedList(BJLC, Constants.BJPN_CODENAME);
+					
+					BJPNList.remove(BJPN);
+					BJLCList.remove(BJLC);
+					break;
+				}				
+			}
+		}
+		return matchedList;
+		
+	}
+	
+	/**
+	 * 得到PA薄中指定表的BJPN列表.
+	 * @param PABook
+	 * @param sheetName
+	 * @return
+	 */
+	public List getBJPNList(Workbook PABook, String sheetName){
+		return getColumnContents(PABook, sheetName, 
+				Constants.BJPN_COLUMN_INDEX, Constants.PA_SHEET);
+	}
+	
+	/**
+	 * 得到指定表某一列的值.
+	 * @param book
+	 * @param sheetName
+	 * @param columnIndex
+	 * @param category
+	 * @return
+	 */
+	public List getColumnContents(Workbook book, String sheetName,
+			int columnIndex, String category){
+		Sheet sheet = book.getSheet(sheetName);
+		List list = new ArrayList();
+		Cell []cells = sheet.getColumn(columnIndex);
+		
+		int sheetRows = sheet.getRows();
+		int stepping = -1;  //越过该列列名
+		if(category.equals(Constants.BJ_SHEET)){
+			stepping = Constants.BJ_STEPPING;
+		}else if(category.equals(Constants.PA_SHEET)){
+			stepping = Constants.PA_STEPPING;
+		}
+		
+		for(int i=stepping ; i<sheetRows; i++){  
+			add2List(list, cells[i].getContents());
+		}		
+		return list;
+	}
+	
+	
+	/**
+	 * 先构造横向值(代表一条记录), 再与BJLC列表比较. 找到匹配,则填充进匹配列表的封装.
+	 * 
+	 * 
+	 * 这个比较方法遵循的比较方式为:
+	 * 在BJPN存在的条件下,只比较BJPN,匹配则加入匹配列表,不匹配则跳过该记录.
+	 * BJPN无有效值,比较barcode,匹配方式同上
+	 * BJPN,barcode都无有效值时, 比较SN和LC, 两者若能匹配到BJLC,就加入匹配列表.
 	 */
 	public void comparePN2(List constructList){ // 改名?
 		//List pn_token = null;
@@ -355,7 +433,7 @@ public class MatchPN_1 {
 	}
 	
 	/**
-	 * 是否匹配.
+	 * 判断传入的编号和BJLC是否匹配.
 	 * @param BJLC
 	 * @param pn
 	 * @return
@@ -369,6 +447,30 @@ public class MatchPN_1 {
 		}		
 		return isOk;
 	}
+	
+//	/**
+//	 * 按传入的匹配模式来匹配BJLC和传入的编号.
+//	 * @param BJLC
+//	 * @param pn
+//	 * @param modus
+//	 * @return
+//	 */
+//	public boolean isMatched(String BJLC, String pn, String modus){
+//		if(modus.equals(Constants.BJPN_COMPARE)){
+//			return BJLC.equals(pn);
+//		}		
+//		return false;
+//	}
+//	
+//	/**
+//	 * 判断BJLC和BJPN是否相同.
+//	 * @param BJLC
+//	 * @param BJPN
+//	 * @return
+//	 */
+//	public boolean isBJPNMatched(String BJLC, String BJPN){
+//		return BJLC.equals(BJPN);
+//	}
 	
 	/**
 	 * 填充匹配列表的封装.
@@ -392,19 +494,23 @@ public class MatchPN_1 {
 	}
 	
 	/**
+	 * <b> Some problems herein! Remains just for refence. 不要用这个方法! </b> <P>
 	 * 对PA薄中一个工作表作对比, 将匹配的结果分别写入新工作薄中的两张工作表.
 	 * 一张是对应匹配编号的BJ物料表中的记录.
 	 * 一张是对应PA表中的记录.
+	 * 
+	 * @param BJBook
+	 * @param PABook
 	 * @param destBook
 	 * @param list 对PA薄中一个工作表作对比,返回的匹配的编号封装
 	 * @throws WriteException 
 	 * @throws RowsExceededException 
 	 */
-	public void makeOutputSheets(Workbook srcBook1, Workbook srcBook2, 
+	public void makeOutputSheets(Workbook BJBook, Workbook PABook, 
 			WritableWorkbook destBook, 
-			List list, String paSheetName) throws RowsExceededException, WriteException{		
-		setMatchedBJSheet(destBook.createSheet("MatchedBJSheet", 0));
-		setMatchedPASheet(destBook.createSheet("matchedPASheet", 1));
+			List list, String paSheetName) {		
+//		setMatchedBJSheet(destBook.createSheet("MatchedBJSheet", 0));
+//		setMatchedPASheet(destBook.createSheet("matchedPASheet", 1));
 		
 		WritableFont arial9 = new WritableFont(WritableFont.ARIAL, 9);
 		WritableCellFormat format = new WritableCellFormat(arial9);
@@ -414,43 +520,190 @@ public class MatchPN_1 {
 		Cell []bjCellRow = null;
 		Cell []paCellRow = null;
 		
-		bjLabelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT + 1];
-		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT + 1];
+		//构造一行的显示,数组大小表示列的数量
+		bjLabelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT ];  
+		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
 		
-		Cell []bjSheetHead = getSheetHead(srcBook1,Constants.BJPARTS_SHEET_NAME,
+		//加入表头的列名信息
+		Cell []bjSheetHead = getSheetHead(BJBook,Constants.BJPARTS_SHEET_NAME,
 				Constants.BJ_SHEET);		
-		Cell []paSheetHead = getSheetHead(srcBook2,paSheetName,Constants.PA_SHEET);
+		Cell []paSheetHead = getSheetHead(PABook,paSheetName,Constants.PA_SHEET);
 		for(int i=0; i<bjSheetHead.length; i++){
 			bjLabelRow[i] = new Label(i,0,bjSheetHead[i].getContents(),format);
-			matchedBJSheet.addCell(bjLabelRow[i]);
+			try {
+				matchedBJSheet.addCell(bjLabelRow[i]);
+			} catch (RowsExceededException e) {
+				System.out.println("Add BJ sheet head failed - rows exceeded!");
+				e.printStackTrace();
+			} catch (WriteException e) {
+				System.out.println("Add BJ sheet head failed - write exception!");
+				e.printStackTrace();
+			}
 		}
 		for(int i=0; i<paSheetHead.length; i++){
 			paLabelRow[i] = new Label(i,0,paSheetHead[i].getContents(),format);
-			matchedPASheet.addCell(paLabelRow[i]);
+			try {
+				matchedPASheet.addCell(paLabelRow[i]);
+			} catch (RowsExceededException e) {
+				System.out.println("Add PA sheet head failed - rows exceeded!");
+				e.printStackTrace();
+			} catch (WriteException e) {
+				System.out.println("Add PA sheet head failed - write exception!");
+				e.printStackTrace();
+			}
 		}
 		
+		bjLabelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT ];  //重新初始化
+		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
 		for(int i=0; i<list.size(); i++){
 			List pn_token = (List)list.get(i);
-			String pn = (String) pn_token.get(0);
-			String token = (String) pn_token.get(1);
+			String pn = (String) pn_token.get(Constants.PN_IN_MATCHED_LIST_INDEX);
+			String token = (String) pn_token.get(Constants.TOKEN_IN_MATCHED_LIST_INDEX);
 			
-			bjCellRow = getRow(srcBook1,Constants.BJPARTS_SHEET_NAME,pn,Constants.BJLC_CODENAME);
-			paCellRow = getRow(srcBook2,paSheetName,pn,token);
+			bjCellRow = getRow(BJBook,Constants.BJPARTS_SHEET_NAME,pn,Constants.BJLC_CODENAME);
+			paCellRow = getRow(PABook,paSheetName,pn,token);
 //			bjLabelRow = new Label[bjCellRow.length + 1];
 //			paLabelRow = new Label[paCellRow.length + 1];			
 			
 			for(int j=0; j<bjCellRow.length; j++){
 				bjLabelRow[j] = new Label(j,i+1,bjCellRow[j].getContents(),format);				
-				matchedBJSheet.addCell(bjLabelRow[j]);				
+				try {
+					matchedBJSheet.addCell(bjLabelRow[j]);
+				} catch (RowsExceededException e) {
+					System.out.println("Add a row to BJ sheet failed - rows exceeded!");
+					e.printStackTrace();
+				} catch (WriteException e) {
+					System.out.println("Add a row to BJ sheet failed - write exception!");
+					e.printStackTrace();
+				}				
 			}			
 			for(int k=0; k<paCellRow.length; k++){
 				paLabelRow[k] = new Label(k,i+1,paCellRow[k].getContents(),format);
-				matchedPASheet.addCell(paLabelRow[k]);
+				try {
+					matchedPASheet.addCell(paLabelRow[k]);
+				} catch (RowsExceededException e) {
+					System.out.println("Add a row to PA sheet failed - rows exceeded!");
+					e.printStackTrace();
+				} catch (WriteException e) {
+					System.out.println("Add a row to PA sheet failed - write exception!");
+					e.printStackTrace();
+				}
 			}			
+		}	
+	}
+	
+	/**
+	 * 这个填充方法只针对PA薄中的该指定工作表,
+	 * 根据匹配列表封装中的匹配编号,将BJ表和该PA表中对应的记录行分别抽取
+	 * 到输出工作薄的相应表.
+	 * 
+	 * 一张是对应匹配编号的BJ物料表中的记录.
+	 * 一张是对应PA表中的记录.
+	 * 
+	 * 
+	 * @param matchedList
+	 * @param format
+	 * @param paSheetName
+	 * @param category
+	 */
+	public void output2SheetsPerPASheet(Workbook BJBook, Workbook PABook,
+			List matchedList, WritableCellFormat format,
+			String paSheetName){		
+		Label []bjLabelRow = null;
+		Label []paLabelRow = null;
+		Cell []bjCellRow = null;
+		Cell []paCellRow = null;
+		
+		bjLabelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT ];  //初始化
+		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
+		for(int i=0; i<matchedList.size(); i++){
+			List pn_token = (List)matchedList.get(i);
+			String pn = (String) pn_token.get(Constants.PN_IN_MATCHED_LIST_INDEX);
+			String token = (String) pn_token.get(Constants.TOKEN_IN_MATCHED_LIST_INDEX);
+			
+			bjCellRow = getRow(BJBook,Constants.BJPARTS_SHEET_NAME,pn,Constants.BJLC_CODENAME);
+			paCellRow = getRow(PABook,paSheetName,pn,token);		
+			
+			for(int j=0; j<bjCellRow.length; j++){
+				bjLabelRow[j] = new Label(j,i+1,bjCellRow[j].getContents(),format);				
+				try {
+					matchedBJSheet.addCell(bjLabelRow[j]);
+				} catch (RowsExceededException e) {
+					System.out.println("Add a row to BJ sheet failed - rows exceeded!");
+					e.printStackTrace();
+				} catch (WriteException e) {
+					System.out.println("Add a row to BJ sheet failed - write exception!");
+					e.printStackTrace();
+				}				
+			}			
+			for(int k=0; k<paCellRow.length; k++){
+				paLabelRow[k] = new Label(k,i+1,paCellRow[k].getContents(),format);
+				try {
+					matchedPASheet.addCell(paLabelRow[k]);
+				} catch (RowsExceededException e) {
+					System.out.println("Add a row to PA sheet failed - rows exceeded!");
+					e.printStackTrace();
+				} catch (WriteException e) {
+					System.out.println("Add a row to PA sheet failed - write exception!");
+					e.printStackTrace();
+				}
+			}			
+		}		
+	}
+	
+	//所有匹配显示的结果,只填充到两个表中...
+	public void fillSheets(){
+		
+	}
+	
+	/**
+	 * 把表头信息写入到输出的工作表里.
+	 * @param book
+	 * @param sheetName 要读取的PA薄中的工作表的名字 (BJ表是一张工作表)
+	 * @param format
+	 * @param category
+	 */
+	public void makeSheetHead(Workbook book, String sheetName, 
+			WritableCellFormat format, String category){		
+		Label []labelRow = null;
+		Cell []sheetHead = null;
+		
+		if(category.equals(Constants.BJ_SHEET)){
+			labelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT ];
+			sheetHead = getSheetHead(book,Constants.BJPARTS_SHEET_NAME,Constants.BJ_SHEET);  //加入表头的列名信息			
+		}else if(category.equals(Constants.PA_SHEET)){
+			labelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
+			sheetHead = getSheetHead(book,sheetName,Constants.PA_SHEET);			
+		}		
+		
+		for(int i=0; i<sheetHead.length; i++){
+			labelRow[i] = new Label(i,0,sheetHead[i].getContents(),format);
+			try {
+				if(category.equals(Constants.BJ_SHEET)){
+					matchedBJSheet.addCell(labelRow[i]);
+				}else if(category.equals(Constants.PA_SHEET)){
+					matchedPASheet.addCell(labelRow[i]);
+				}				
+			} catch (RowsExceededException e) {
+				System.out.println("Add sheet head failed - rows exceeded!");
+				e.printStackTrace();
+			} catch (WriteException e) {
+				System.out.println("Add sheet head failed - write exception!");
+				e.printStackTrace();
+			}
 		}
-		
-				
-		
+	}
+	
+	/**
+	 * 把表头信息写入到输出的工作表里. 
+	 * 默认的方法(PA表中的表头一致).
+	 * @param book
+	 * @param format
+	 * @param category
+	 */
+	public void makeSheetHead(Workbook book, 
+			WritableCellFormat format, String category){			
+		makeSheetHead(book, Constants.CARDREADER_SHEET_NAME, format, category);		
 	}
 	
 	/**
@@ -481,13 +734,25 @@ public class MatchPN_1 {
 		
 	}
 	
-	public void write(WritableWorkbook output) throws IOException, WriteException{
-		output.write();
-		output.close();
+	public void write(WritableWorkbook output){
+		System.out.println("Start to write output workbook ...");
+		try {
+			output.write();
+		} catch (IOException e) {
+			System.out.println("Write output workbook failed!");
+			e.printStackTrace();
+		}
+		try {
+			output.close();
+		} catch (Exception e) {		
+			System.out.println("Close the writable workbook failed!");
+			e.printStackTrace();
+		} 
+		System.out.println("Write output workbook succeeded!");
 	}
 	
 	/**
-	 * 从一个工作薄的以改工作表名指定的工作表中, 读取匹配编号的一行记录.
+	 * 从一个工作薄的以该工作表名指定的工作表中, 读取匹配编号的一行记录.
 	 * @param book
 	 * @param sheetName
 	 * @param pn
@@ -496,8 +761,8 @@ public class MatchPN_1 {
 	 */
 	public Cell[] getRow(Workbook book, String sheetName, String pn, String token){
 		Cell []cells = null;
-		Sheet srcSheet = book.getSheet(sheetName);		
-		int rowIndex = -1;
+		Sheet srcSheet = book.getSheet(sheetName);
+		int rowIndex = -1;  //要抽取的行的下标
 		Cell []srcCells = null;
 		
 		if(token.equals(Constants.BJPN_CODENAME)){
@@ -508,16 +773,18 @@ public class MatchPN_1 {
 			srcCells = srcSheet.getColumn(Constants.SN_COLUMN_INDEX);
 		}else if(token.equals(Constants.BJLC_CODENAME)){
 			srcCells = srcSheet.getColumn(Constants.BJLC_COLUMN_INDEX);
+		}else if(token.equals(Constants.LCPN_CODENAME)){
+			srcCells = srcSheet.getColumn(Constants.LCPN_COLUMN_INDEX);
 		}
 		
 		for(int i=0; i<srcCells.length; i++){
 			String content = srcCells[i].getContents();
-//			if(content != null && !content.equals("")){
+			if(content != null && !content.equals("")){
 				if(content.equals(pn)){
 					rowIndex = i;
 					break;
 				}
-//			}
+			}
 		}
 		
 		Cell []temp = srcSheet.getRow(rowIndex);

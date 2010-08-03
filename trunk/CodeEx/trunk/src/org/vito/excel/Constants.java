@@ -42,6 +42,16 @@ public class Constants {
 	 */
 	public static final int PA_VALID_COLUMN_COUNT = 16;
 	
+	/**
+	 * 编号在匹配列表封装中的下标
+	 */
+	public static final int PN_IN_MATCHED_LIST_INDEX = 0;
+	
+	/**
+	 * 匹配方式代号在匹配列表封装中的下标.
+	 */
+	public static final int TOKEN_IN_MATCHED_LIST_INDEX = 1;
+	
 	public static final String BJPARTS_SHEET_NAME = "Sheet1";
 	public static final String CARDREADER_SHEET_NAME = "Cardreader-Barry";
 	public static final String PCI_SHEET_NAME = "PCI Adapter-barry";
@@ -77,5 +87,10 @@ public class Constants {
 	 * PA表中的SN.
 	 */
 	public static final String SN_CODENAME = "SN";
+	
+	/**
+	 * 只匹配BJPN.
+	 */
+	public static final String BJPN_COMPARE = "only compare bjpn";
 	
 }

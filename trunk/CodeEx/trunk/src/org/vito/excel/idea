@@ -33,10 +33,6 @@ bj表,抽取的是LC编号一列(BJLC). 与pa表的匹配:
 	与pa表的lc编号<由于历史原因,pa表的部分lc编号不规范>)
 两者lc不匹配, 则用BJLC与pa表的barcode1,lc编号,ln编号,sn编号匹配. 
 	(依次匹配,包括BJLC去头3(或4)个0的字串的第二轮匹配)
-
-
-
-
 		List matchedPNs = new ArrayList(); //匹配的所有编号
 		List []matchedRowsInSheet1;  //从工作表1中抽取的匹配编号所在行包含的内容
 		List []matchedRowsInSheet2;  
@@ -45,9 +41,21 @@ bj表,抽取的是LC编号一列(BJLC). 与pa表的匹配:
 		Sheet matchedExportSheet2; 
 		Sheet summaryExportSheet;  //统计相关信息的导出新表
 		
-		Workbook exportedBook;  //导出的工作薄
-		
+		Workbook exportedBook;  //导出的工作薄		
 =========
 TO DO
-1.改写对比的方法 (考虑大小写)
-2.改写输出的方式.
+1.改写对比的方法 (考虑大小写---done)  --- done
+2.改写输出的方式.  --- done
+
+
+=========
+管理方式
+1.Asset, 在库中部件的统计表
+2.借用信息表, 记录借用的历史记录,借与还
+3.归还CDL记录表, 记录归还CDL的部件信息. 包括坏的部件和老产品的部件归还.
+
+
+
+
+
+

@@ -1,0 +1,110 @@
+package org.vito.excel.automatch;
+
+public class Constants {
+	/**
+	 * BJ部件表中LC编码所在列的下标.
+	 */
+	public static final int BJLC_COLUMN_INDEX = 1;
+	/**
+	 * PA部件表中的BJ物料编号列的下标.
+	 */
+	public static final int BJPN_COLUMN_INDEX = 7;
+	public static final int LCPN_COLUMN_INDEX = 6;
+	public static final int BARCODE_COLUMN_INDEX = 8;
+	public static final int SN_COLUMN_INDEX = 4;
+	
+	/**
+	 * BJ表中表头所在行下标
+	 */
+	public static final int BJ_SHEET_HEAD_ROWINDEX = 0;
+	
+	/**
+	 * PA表中表头所在行下标
+	 */
+	public static final int PA_SHEET_HEAD_ROWINDEX = 10;
+	
+	/**
+	 * BJ部件表中,为了越过所在列的列名而越过的行数.
+	 */
+	public static final int BJ_STEPPING = 1;
+	/**
+	 * PA部件表中,为了越过所在列的上部空间,直接读取表数值而越过的行数.
+	 */
+	public static final int PA_STEPPING = 11;
+	
+	/**
+	 * BJ表中,有效数据的列的数量.
+	 */
+	public static final int BJ_VALID_COLUMN_COUNT = 14;
+	
+	/**
+	 * PA表中,有效数据的列的数量.
+	 */
+	public static final int PA_VALID_COLUMN_COUNT = 16;
+	
+	/**
+	 * 编号在匹配列表封装中的下标
+	 */
+	public static final int PN_IN_MATCHED_LIST_INDEX = 0;
+	
+	/**
+	 * 匹配方式代号在匹配列表封装中的下标.
+	 */
+	public static final int TOKEN_IN_MATCHED_LIST_INDEX = 1;
+	///
+	
+	///Sheet names
+	public static final String BJPARTS_SHEETNAME = "Sheet1";
+	public static final String HDD_SHEETNAME = "HDD";
+	public static final String ODD_SHEETNAME = "ODD";
+	public static final String MEM_SHEETNAME = "Memory";
+	public static final String FDD_SHEETNAME = "FDD";
+	public static final String NV_SHEETNAME = "Nvidia";
+	public static final String ATI_SHEETNAME = "ATI";
+	public static final String KB_SHEETNAME = "KB";
+	public static final String MOUSE_SHEETNAME = "Mouse";
+	public static final String CARDREADER_SHEETNAME = "Cardreader-Barry";
+	public static final String PCI_SHEETNAME = "PCI Adapter-barry";
+	public static final String CONNECTOR_SHEETNAME = "Connector-barry";
+	public static final String OTHER_SHEETNAME = "Other";
+	///
+	
+	/**
+	 * 代表BJ物料表.
+	 */
+	public static final String BJ_SHEET = "BJ";
+	
+	/**
+	 * 代表PA部件表
+	 */
+	public static final String PA_SHEET = "PA";
+	
+	///编号代号token
+	/**
+	 * BJ表中的LC编号
+	 */
+	public static final String BJLC_CODENAME = "BJLC";	
+	/**
+	 * PA表中的BJ物料编号.
+	 */
+	public static final String BJPN_CODENAME = "BJPN";
+	/**
+	 * PA表中的LC编号.
+	 */
+	public static final String LCPN_CODENAME = "LCPN";
+	/**
+	 * PA表中的条形码.
+	 */
+	public static final String BARCODE_CODENAME = "Barcode";
+	/**
+	 * PA表中的SN.
+	 */
+	public static final String SN_CODENAME = "SN";
+	///
+	
+	/**
+	 * 只匹配BJPN.
+	 */
+	public static final String BJPN_COMPARE = "only compare bjpn";
+	
+}

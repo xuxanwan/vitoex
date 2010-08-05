@@ -198,11 +198,67 @@ public class MatchOperation {
 	}
 	
 	/**
+	 * 得到BJ表中未匹配的BJLC编号列表.
+	 * @param BJBook
+	 * @param allMatchedList
+	 * @return
+	 */
+	public static List getUnmatchedBJLC(Workbook BJBook, List allMatchedList){
+		List BJLCList = MatchOperation.getBJLCList(BJBook, Constants.BJPARTS_SHEETNAME);
+		
+		for(int i=0; i<allMatchedList.size(); i++){
+			List pn_token =  (List) allMatchedList.get(i);
+			String matchedBJLC = (String)pn_token.get(Constants.BJLC_IN_MATCHED_LIST_INDEX);
+			
+			for(int j=0;j<BJLCList.size(); j++){
+				if(isMatched(matchedBJLC, (String)BJLCList.get(j))){
+					BJLCList.remove(BJLCList.get(j));
+					j--;
+					allMatchedList.remove(i);
+					i--;
+					break;
+				}
+			}			
+		}		
+		return BJLCList;
+	}
+	
+	/**
+	 * 匹配规则.
+	 * 判断传入的编号和BJLC是否匹配.
+	 * @param BJLC
+	 * @param pn
+	 * @return
+	 */
+	public static boolean isMatched(String BJLC, String pn){
+		boolean isOk = false;			
+		if(BJLC.equalsIgnoreCase(pn) || BJLC.substring(3).equalsIgnoreCase(pn) || 
+				BJLC.substring(4).equalsIgnoreCase(pn) ||
+				BJLC.substring(5).equalsIgnoreCase(pn)){
+			isOk = true;
+		}		
+		return isOk;
+	}
+	
+	/**
+	 * 复制源列表的每一项到目的列表.
+	 * @param src
+	 * @param dest
+	 * @return
+	 */
+	public static List copyList(List src, List dest){
+		for(int i=0; i<src.size(); i++){
+			dest.add(src.get(i));
+		}
+		return dest;
+	}
+	
+	/**
 	 * 从一个工作薄的以该工作表名指定的工作表中, 读取匹配编号的一行记录.
 	 * @param book
 	 * @param sheetName
 	 * @param pn
-	 * @param token
+	 * @param token 判断传入编号所在的列的令牌
 	 * @return 该行有效值的所有单元格.
 	 */
 	public static Cell[] getRow(Workbook book, String sheetName, String pn, String token){

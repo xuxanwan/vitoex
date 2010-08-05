@@ -163,7 +163,7 @@ public class Deprecated {
 		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
 		for(int i=0; i<list.size(); i++){
 			List pn_token = (List)list.get(i);
-			String pn = (String) pn_token.get(Constants.PN_IN_MATCHED_LIST_INDEX);
+			String pn = (String) pn_token.get(Constants.PAPN_IN_MATCHED_LIST_INDEX);
 			String token = (String) pn_token.get(Constants.TOKEN_IN_MATCHED_LIST_INDEX);
 			
 			bjCellRow = MatchOperation.getRow(BJBook,Constants.BJPARTS_SHEETNAME,pn,Constants.BJLC_CODENAME);

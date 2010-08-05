@@ -34,10 +34,15 @@ public class MatchPN {
 	private List BJLCList;
 	private List matchedList;
 	private WritableSheet matchedBJSheet;
+	private WritableSheet unmatchedBJSheet;
 	private WritableSheet matchedPASheet;
-	
+		
 	public WritableSheet getMatchedBJSheet() {
 		return matchedBJSheet;
+	}
+	
+	public void setUnmatchedBJSheet(WritableSheet unmatchedBJSheet){
+		this.unmatchedBJSheet = unmatchedBJSheet;
 	}
 	
 	/**
@@ -84,7 +89,7 @@ public class MatchPN {
 		BJLCList = null;
 		matchedList = null;
 		matchedBJSheet = null;
-		matchedBJSheet = null;
+		matchedPASheet = null;
 	}	
 	
 	/**
@@ -109,7 +114,7 @@ public class MatchPN {
 	 * 把BJLC和PA表中的BJPN进行比较. 
 	 * 并把比较的结果(匹配的编号)填充入匹配列表封装.
 	 * @param BJPNList
-	 * @return 匹配列表的封装: [BJLC, 编号代号token].
+	 * @return 匹配列表的封装: [BJLC, PAPN, 编号代号token]
 	 */
 	public List compareBJPN(List BJPNList){
 		return comparePN(BJPNList, Constants.BJPN_CODENAME);				
@@ -119,7 +124,7 @@ public class MatchPN {
 	 * 把PA表中的给定编号列表和BJLC进行比较. 
 	 * @param PNList
 	 * @param token 该编号的代号(标示哪一种编号)
-	 * @return 匹配列表的封装: [BJLC, 编号代号token].
+	 * @return 匹配列表的封装: [BJLC, PAPN, 编号代号token]
 	 */
 	public List comparePN(List PNList, String token){
 		matchedList = new ArrayList();	
@@ -130,8 +135,9 @@ public class MatchPN {
 			for(int j=0; j<BJLCList.size(); j++){
 				String BJLC = (String) BJLCList.get(j);
 				
-				if(isMatched(BJLC, pn)){
-					fillMatchedList(BJLC, token);
+				if(MatchOperation.isMatched(BJLC, pn)){
+//					fillMatchedList(BJLC, token);
+					fillMatchedList(BJLC, pn, token);
 					
 					PNList.remove(pn);
 					i = i - 1;  //下标回调, 补位
@@ -165,29 +171,29 @@ public class MatchPN {
 			String BJLC = (String)BJLCList.get(i);
 			
 			if(bjpn != null && bjpn != ""){  //bjpn有效值
-				if(isMatched(BJLC, bjpn)){
+				if(MatchOperation.isMatched(BJLC, bjpn)){
 					token = Constants.BJPN_CODENAME;
-					fillMatchedList(BJLC, token);	
+					fillMatchedList(BJLC,bjpn, token);	
 					BJLCList.remove(BJLC);
 					break;
 				}				
 			}else if(bar != null && bar != ""){ //bar有效值
-				if(isMatched(BJLC, bar) ){
+				if(MatchOperation.isMatched(BJLC, bar) ){
 					token = Constants.BARCODE_CODENAME;
-					fillMatchedList(BJLC, token);
+					fillMatchedList(BJLC,bar, token);
 					BJLCList.remove(BJLC);
 					break;
 				} 		
 			}else {  //bjpn,bar 都无有效值
 				if( (lc != null && lc != "") || (sn != null && sn != "") ){
-					if(isMatched(BJLC, lc) ){
+					if(MatchOperation.isMatched(BJLC, lc) ){
 						token = Constants.LCPN_CODENAME;
-						fillMatchedList(BJLC, token);
+						fillMatchedList(BJLC, lc, token);
 						BJLCList.remove(BJLC);
 						break;
-					}else if(isMatched(BJLC, sn) ){
+					}else if(MatchOperation.isMatched(BJLC, sn) ){
 						token = Constants.SN_CODENAME;
-						fillMatchedList(BJLC, token);
+						fillMatchedList(BJLC, sn, token);
 						BJLCList.remove(BJLC);
 						break;
 					}				
@@ -197,29 +203,14 @@ public class MatchPN {
 	}
 	
 	/**
-	 * 匹配规则.
-	 * 判断传入的编号和BJLC是否匹配.
-	 * @param BJLC
-	 * @param pn
-	 * @return
-	 */
-	public boolean isMatched(String BJLC, String pn){
-		boolean isOk = false;			
-		if(BJLC.equalsIgnoreCase(pn) || BJLC.substring(3).equalsIgnoreCase(pn) || 
-				BJLC.substring(4).equalsIgnoreCase(pn) ){
-			isOk = true;
-		}		
-		return isOk;
-	}
-	
-	/**
-	 * 填充匹配列表的封装. [BJLC, 编号代号token]
-	 * @param BJLC
+	 * 填充匹配列表的封装. [BJLC, PAPN, 编号代号token]
+	 * @param PN
 	 * @param token
 	 */
-	public void fillMatchedList(String BJLC, String token){
+	public void fillMatchedList(String BJLC, String PAPN, String token){
 		List pn_token = new ArrayList();	 //重新初始化
 		pn_token.add(BJLC);
+		pn_token.add(PAPN);
 		pn_token.add(token);
 		matchedList.add(pn_token);	
 	}	
@@ -248,10 +239,11 @@ public class MatchPN {
 		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
 		for(int i=0; i<matchedList.size(); i++){
 			List pn_token = (List)matchedList.get(i);
-			String pn = (String) pn_token.get(Constants.PN_IN_MATCHED_LIST_INDEX);
+			String bjlc = (String)pn_token.get(Constants.BJLC_IN_MATCHED_LIST_INDEX);
+			String pn = (String) pn_token.get(Constants.PAPN_IN_MATCHED_LIST_INDEX);
 			String token = (String) pn_token.get(Constants.TOKEN_IN_MATCHED_LIST_INDEX);
 			
-			bjCellRow = MatchOperation.getRow(BJBook,Constants.BJPARTS_SHEETNAME,pn,Constants.BJLC_CODENAME);
+			bjCellRow = MatchOperation.getRow(BJBook,Constants.BJPARTS_SHEETNAME,bjlc,Constants.BJLC_CODENAME);
 			paCellRow = MatchOperation.getRow(PABook,paSheetName,pn,token);		
 			
 			for(int j=0; j<bjCellRow.length; j++){
@@ -282,7 +274,36 @@ public class MatchPN {
 	}
 	
 	/**
-	 * 所有进行匹配的PA表, 最后只输出2个新表, 分别是BJ表和PA表中的对应项.
+	 * 将BJ表中没有匹配的编号对应的行输出到新的工作表中.
+	 * @param BJBook
+	 * @param unmatchedBJLC
+	 * @param format
+	 */
+	public void makeUnmatchedBJSheet(Workbook BJBook, List unmatchedBJLC, 
+			WritableCellFormat format){
+		Label []bjLabelRow = null;
+		Cell []bjCellRow = null;		
+		int currentRowCount = unmatchedBJSheet.getRows();
+		
+		bjLabelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT ];  //初始化
+		for(int i=0; i<unmatchedBJLC.size(); i++){			
+			String bjlc = (String)unmatchedBJLC.get(i);
+			bjCellRow = MatchOperation.getRow(BJBook,Constants.BJPARTS_SHEETNAME,bjlc,Constants.BJLC_CODENAME);
+			
+			for(int j=0; j<bjCellRow.length; j++){
+				bjLabelRow[j] = new Label(j,currentRowCount,bjCellRow[j].getContents(),format);				
+				try {
+					unmatchedBJSheet.addCell(bjLabelRow[j]);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}				
+			}			
+			currentRowCount++;		
+		}	
+	}
+	
+	/**
+	 * 对于所有进行匹配的PA表, 最后只输出2个新表, 分别是BJ表和PA表中的对应项.
 	 * 调用一次该填充方法, 对当前的PA表, 向准备输出的两个工作表分别填充
 	 * 对应于该PA表的匹配结果.
 	 * 
@@ -303,10 +324,11 @@ public class MatchPN {
 		paLabelRow = new Label[Constants.PA_VALID_COLUMN_COUNT ];
 		for(int i=0; i<matchedList.size(); i++){
 			List pn_token = (List)matchedList.get(i);
-			String pn = (String) pn_token.get(Constants.PN_IN_MATCHED_LIST_INDEX);
+			String bjlc = (String)pn_token.get(Constants.BJLC_IN_MATCHED_LIST_INDEX);
+			String pn = (String) pn_token.get(Constants.PAPN_IN_MATCHED_LIST_INDEX);
 			String token = (String) pn_token.get(Constants.TOKEN_IN_MATCHED_LIST_INDEX);
 			
-			bjCellRow = MatchOperation.getRow(BJBook,Constants.BJPARTS_SHEETNAME,pn,Constants.BJLC_CODENAME);
+			bjCellRow = MatchOperation.getRow(BJBook,Constants.BJPARTS_SHEETNAME,bjlc,Constants.BJLC_CODENAME);
 			paCellRow = MatchOperation.getRow(PABook,paSheetName,pn,token);		
 			
 			for(int j=0; j<bjCellRow.length; j++){
@@ -363,7 +385,8 @@ public class MatchPN {
 		Label []labelRow = null;
 		Cell []sheetHead = null;
 		
-		if(category.equals(Constants.BJ_SHEET)){
+		if(category.equals(Constants.BJ_SHEET) || 
+				category.equals(Constants.BJ_UNMATCHED_SHEET)){
 			labelRow = new Label[Constants.BJ_VALID_COLUMN_COUNT ];
 			sheetHead = MatchOperation.getSheetHead(book,Constants.BJPARTS_SHEETNAME,Constants.BJ_SHEET);  //加入表头的列名信息			
 		}else if(category.equals(Constants.PA_SHEET)){
@@ -378,7 +401,9 @@ public class MatchPN {
 					matchedBJSheet.addCell(labelRow[i]);
 				}else if(category.equals(Constants.PA_SHEET)){
 					matchedPASheet.addCell(labelRow[i]);
-				}				
+				}else if(category.equals(Constants.BJ_UNMATCHED_SHEET)){
+					unmatchedBJSheet.addCell(labelRow[i]);
+				}
 			} catch (RowsExceededException e) {
 				System.out.println("Add sheet head failed - rows exceeded!");
 				e.printStackTrace();

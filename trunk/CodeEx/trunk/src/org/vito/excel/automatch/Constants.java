@@ -43,14 +43,19 @@ public class Constants {
 	public static final int PA_VALID_COLUMN_COUNT = 16;
 	
 	/**
-	 * 编号在匹配列表封装中的下标
+	 * BJLC编号在匹配列表封装中的下标
 	 */
-	public static final int PN_IN_MATCHED_LIST_INDEX = 0;
+	public static final int BJLC_IN_MATCHED_LIST_INDEX = 0;
+	
+	/**
+	 * PA表中某个PN编号在匹配列表封装中的下标
+	 */
+	public static final int PAPN_IN_MATCHED_LIST_INDEX = 1;
 	
 	/**
 	 * 匹配方式代号在匹配列表封装中的下标.
 	 */
-	public static final int TOKEN_IN_MATCHED_LIST_INDEX = 1;
+	public static final int TOKEN_IN_MATCHED_LIST_INDEX = 2;
 	///
 	
 	///Sheet names
@@ -63,16 +68,18 @@ public class Constants {
 	public static final String ATI_SHEETNAME = "ATI";
 	public static final String KB_SHEETNAME = "KB";
 	public static final String MOUSE_SHEETNAME = "Mouse";
-	public static final String CARDREADER_SHEETNAME = "Cardreader-Barry";
-	public static final String PCI_SHEETNAME = "PCI Adapter-barry";
-	public static final String CONNECTOR_SHEETNAME = "Connector-barry";
+	public static final String CARDREADER_SHEETNAME = "Cardreader";
+	public static final String PCI_SHEETNAME = "PCI Adapter";
+	public static final String CONNECTOR_SHEETNAME = "Connector";
 	public static final String OTHER_SHEETNAME = "Other";
 	///
 	
 	/**
 	 * 代表BJ物料表.
 	 */
-	public static final String BJ_SHEET = "BJ";
+	public static final String BJ_SHEET = "BJ materials sheet";
+	
+	public static final String BJ_UNMATCHED_SHEET = "Unmatched BJ materials sheet";
 	
 	/**
 	 * 代表PA部件表

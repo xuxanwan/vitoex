@@ -1,4 +1,4 @@
-package org.vito.dummy;
+package org.vito.log;
 
 /**
  * Simulation class for test need.

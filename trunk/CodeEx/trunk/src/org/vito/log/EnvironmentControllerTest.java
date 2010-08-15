@@ -1,6 +1,5 @@
 package org.vito.log;
 
-import org.vito.dummy.MockControlHardware;
 
 /**
  * Illustrating Dual Standard: test/production environment have different

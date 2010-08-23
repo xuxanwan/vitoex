@@ -1,5 +1,10 @@
 package org.vito.test;
 
+/**
+ * 
+ * @author vito
+ *
+ */
 public class Test {
 
 	/**
@@ -10,6 +15,11 @@ public class Test {
 		for(String s : strArray){
 			System.out.println(s);
 		}
+		
+		System.out.println(Math.log10(2147483648d)/Math.log10(2));
+		System.out.println(Math.log10(12870d)/Math.log10(2));
+		
+		System.out.println("Hello " + 33);
 	}
 
 }

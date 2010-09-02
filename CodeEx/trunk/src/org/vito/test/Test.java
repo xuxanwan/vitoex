@@ -24,6 +24,9 @@ public class Test {
 		String str = "Hello"; 
 		char []ch = str.toCharArray();
 		//System.out.println(ch[-1]);
+		
+		System.out.println('\0');
+		System.out.println("Test a 'con'");
 	}
 
 }

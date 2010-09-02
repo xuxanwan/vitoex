@@ -3,7 +3,7 @@ package org.vito.util.parser.argument;
 import static org.vito.util.parser.argument.ArgsException.ErrorCode.*;
 
 public class ArgsException extends Exception {
-	private char errorArgumentId = '\0';
+	private char errorArgumentId = '\0';	
 	private String errorParameter = null;
 	private ErrorCode errorCode = OK;
 

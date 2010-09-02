@@ -19,7 +19,9 @@ public class SimpleUse {
 
 	private static void executeApplication(boolean logging, int port,
 			String directory) {
-		System.out.println(logging + ", " + port + ", " + directory);
-		
+		System.out.println(logging + ", " + port + ", " + directory);		
 	}
+	
+	
+	
 }

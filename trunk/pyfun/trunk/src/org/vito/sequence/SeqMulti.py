@@ -11,8 +11,8 @@ sentence = raw_input("Pls input a sentence: ")
 
 screenWidth = 80
 textWidth = len(sentence)
-boxWidth = textWidth + 6
-leftMargin = (screenWidth - boxWidth) // 2  #取整的除法
+boxWidth = textWidth + 6  #设置显示"盒子"的宽度
+leftMargin = (screenWidth - boxWidth) // 2  #//,取整的除法
 
 print
 print ' ' * leftMargin + '+' + '-' * (boxWidth - 2) + '+'

@@ -1,0 +1,26 @@
+<%@ page language="java" contentType="text/html; charset=${encoding}" pageEncoding="${encoding}"%>
+
+<%
+String contextPath = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+contextPath+"/";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<%--
+<base href="<%=basePath%>"> --%>
+<meta http-equiv="Content-Type" content="text/html; charset=${encoding}">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="keywords" content="kw1,kw2" >
+<meta http-equiv="description" content="">
+<title></title>
+<%--
+<link rel="stylesheet" type="text/css" href="styles.css" >
+<link rel="stylesheet" type="text/css" href="<%=contextPath %>/css/styles.css" >
+--%>
+</head>
+
+<body>
+${cursor}
+</body>
+</html>

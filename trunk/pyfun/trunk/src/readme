@@ -1,0 +1,12 @@
+Encoding: utf-8
+
+=== new file template
+#!/usr/bin/python
+# coding=utf-8
+'''
+Created on ${date}
+@author: vito
+'''
+${cursor}
+
+===

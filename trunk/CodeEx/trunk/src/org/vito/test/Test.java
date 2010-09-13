@@ -27,6 +27,16 @@ public class Test {
 		
 		System.out.println('\0');
 		System.out.println("Test a 'con'");
+		
+		String a = "add dd";
+		String b = a;
+		//b = "bbbbb";
+		System.out.println(a);
+		System.out.println(b);
+		
+		Test test = new Test();
+		System.out.println("The class of " + test + " is " + test.getClass().getName());
+		System.out.println("The class of Test is " + Test.class.getName());
 	}
 
 }

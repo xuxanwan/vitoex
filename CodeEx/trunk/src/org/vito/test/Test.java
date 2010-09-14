@@ -23,7 +23,9 @@ public class Test {
 		System.out.println("\u563F\u563f");
 		String str = "Hello"; 
 		char []ch = str.toCharArray();
+		str = str.replace('H', 'h');
 		//System.out.println(ch[-1]);
+		System.out.println(str);
 		
 		System.out.println('\0');
 		System.out.println("Test a 'con'");

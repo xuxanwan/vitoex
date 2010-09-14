@@ -43,16 +43,16 @@ if request == 'all' : key = 'all'
 
 #some amendments
 nameMatch = None  #暂存匹配的规范名称
-found = False  #查找存在与否的标志
+isFound = False  #查找存在与否的标志
 
 if name in people : 
     nameMatch = name
-    found = True
+    isFound = True
 elif string.capwords(name, ' ') in people :
     nameMatch = string.capwords(name, ' ')
-    found = True
+    isFound = True
 
-if found : 
+if isFound : 
     if request == 'all' :
         print "%s's related info: phone number is %s, address is %s." % \
             (nameMatch,people[nameMatch]['phone'],people[nameMatch]['addr'])

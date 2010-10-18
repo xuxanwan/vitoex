@@ -456,11 +456,13 @@ public abstract class SerialDate implements Comparable,
         // now search through the month names...
         if ((result < 1) || (result > 12)) {
             for (int i = 0; i < monthNames.length; i++) {
-                if (s.equals(shortMonthNames[i])) {
+//                if (s.equals(shortMonthNames[i])) {
+            	if(s.equalsIgnoreCase(shortMonthNames[i])){
                     result = i + 1;
                     break;
                 }
-                if (s.equals(monthNames[i])) {
+//                if (s.equals(monthNames[i])) {
+            	if(s.equalsIgnoreCase(monthNames[i])){
                     result = i + 1;
                     break;
                 }
@@ -662,7 +664,7 @@ public abstract class SerialDate implements Comparable,
     /**
      * Returns the earliest date that falls on the specified day-of-the-week
      * and is AFTER the base date.
-     *
+     * 获得下一个周几的 SerialDate 对象.
      * @param targetWeekday  a code for the target day-of-the-week.
      * @param base  the base date.
      *
@@ -682,7 +684,8 @@ public abstract class SerialDate implements Comparable,
         // find the date...
         final int adjust;
         final int baseDOW = base.getDayOfWeek();
-        if (baseDOW > targetWeekday) {
+//        if (baseDOW > targetWeekday) {  //
+        if(baseDOW >= targetWeekday){  //应该是>=,相等的情况下,应该跳到下一周期.
             adjust = 7 + Math.min(0, targetWeekday - baseDOW);
         }
         else {
@@ -712,17 +715,26 @@ public abstract class SerialDate implements Comparable,
             );
         }
 
-        // find the date...
-        final int baseDOW = base.getDayOfWeek();
-        int adjust = -Math.abs(targetDOW - baseDOW);
-        if (adjust >= 4) {
-            adjust = 7 - adjust;
+        /*original code may have boundary issues.*/
+        // find the date... , 
+//        final int baseDOW = base.getDayOfWeek();        
+//        int adjust = -Math.abs(targetDOW - baseDOW);
+//        if (adjust >= 4) {
+//            adjust = 7 - adjust;
+//        }
+//        if (adjust <= -4) {
+//            adjust = 7 + adjust;
+//        }
+        
+        /*Algorithm from Clean Code*/
+        int delta = targetDOW - base.getDayOfWeek();
+        int positiveDelta = delta + 7;
+        int adjust = positiveDelta % 7;
+        if(adjust > 3){  //
+        	adjust = adjust - 7;  //在上一个星期,减一个周期.
         }
-        if (adjust <= -4) {
-            adjust = 7 + adjust;
-        }
+        
         return SerialDate.addDays(adjust, base);
-
     }
 
     /**

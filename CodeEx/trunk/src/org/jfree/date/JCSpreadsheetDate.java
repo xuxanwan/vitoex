@@ -77,7 +77,7 @@ import java.util.Date;
  * the day numbers will match.
  *
  * <p>
- * Original JCommon src code.
+ * Original JCommon Spreadsheet.java src code.
  * 
  * @author David Gilbert
  */

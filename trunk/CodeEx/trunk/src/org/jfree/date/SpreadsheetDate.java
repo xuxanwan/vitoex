@@ -83,6 +83,18 @@ public class SpreadsheetDate extends SerialDate {
     /** For serialization. */
     private static final long serialVersionUID = -2039586705374454461L;
     
+    /** The serial number for 1 January 1900. */
+    public static final int EARLIEST_DATE_ORDINAL = 2;
+    
+    /** The serial number for 31 December 9999. */
+    public static final int LATEST_DATE_ORDINAL = 2958465;
+    
+    /** The lowest year value supported by this date format. */
+    public static final int MINIMUM_YEAR_SUPPORTED = 1900;
+
+    /** The highest year value supported by this date format. */
+    public static final int MAXIMUM_YEAR_SUPPORTED = 9999;
+    
     /** 
      * The day number (1-Jan-1900 = 2, 2-Jan-1900 = 3, ..., 31-Dec-9999 = 
      * 2958465). 
@@ -97,6 +109,25 @@ public class SpreadsheetDate extends SerialDate {
 
     /** The year (1900 to 9999). */
     private final int year;
+    
+    /**
+     * Returns the number of leap years from 1900 to the specified year 
+     * INCLUSIVE.
+     * <P>
+     * Note that 1900 is not a leap year.
+     *
+     * @param yyyy  the year (in the range 1900 to 9999).
+     *
+     * @return the number of leap years from 1900 to the specified year.
+     */
+    public static int leapYearCount(final int yyyy) {
+
+        final int leap4 = (yyyy - 1896) / 4;
+        final int leap100 = (yyyy - 1800) / 100;
+        final int leap400 = (yyyy - 1600) / 400;
+        return leap4 - leap100 + leap400;
+
+    }
 
     /**
      * Creates a new date instance.
@@ -159,7 +190,7 @@ public class SpreadsheetDate extends SerialDate {
       final int days = this.serial - SERIAL_LOWER_BOUND;
       // overestimated because we ignored leap days
       final int overestimatedYYYY = 1900 + (days / 365);
-      final int leaps = SerialDate.leapYearCount(overestimatedYYYY);
+      final int leaps = leapYearCount(overestimatedYYYY);
       final int nonleapdays = days - leaps;
       // underestimated because we overestimated years
       int underestimatedYYYY = 1900 + (nonleapdays / 365);
@@ -260,8 +291,12 @@ public class SpreadsheetDate extends SerialDate {
      *
      * @return A code representing the day of the week.
      */
-    public int getDayOfWeek() {
-        return (this.serial + 6) % 7 + 1;
+//    public int getDayOfWeek() {
+//        return (this.serial + 6) % 7 + 1;
+//    }
+    
+    Day getDayOfWeekForOrdinalZero(){
+    	return Day.SATURDAY;
     }
 
     /**
@@ -447,7 +482,7 @@ public class SpreadsheetDate extends SerialDate {
      * @return the serial number from the day, month and year.
      */
     private int calcSerial(final int d, final int m, final int y) {
-        final int yy = ((y - 1900) * 365) + SerialDate.leapYearCount(y - 1);
+        final int yy = ((y - 1900) * 365) + leapYearCount(y - 1);
         int mm = SerialDate.AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH[m];
         if (m > MonthConstants.FEBRUARY) {
             if (SerialDate.isLeapYear(y)) {

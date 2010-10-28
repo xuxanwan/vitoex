@@ -32,6 +32,27 @@
  * Original Author:  David Gilbert (for Object Refinery Limited);
  * Contributor(s):   -;
  *
+ * $Id: SerialDate.java,v 1.8 2006/08/29 13:44:16 mungady Exp $
+ *
+ * Changes (from 11-Oct-2001)
+ * --------------------------
+ * 11-Oct-2001 : Re-organised the class and moved it to new package 
+ *               com.jrefinery.date (DG);
+ * 05-Nov-2001 : Added a getDescription() method, and eliminated NotableDate 
+ *               class (DG);
+ * 12-Nov-2001 : IBD requires setDescription() method, now that NotableDate 
+ *               class is gone (DG);  Changed getPreviousDayOfWeek(), 
+ *               getFollowingDayOfWeek() and getNearestDayOfWeek() to correct 
+ *               bugs (DG);
+ * 05-Dec-2001 : Fixed bug in SpreadsheetDate class (DG);
+ * 29-May-2002 : Moved the month constants into a separate interface 
+ *               (MonthConstants) (DG);
+ * 27-Aug-2002 : Fixed bug in addMonths() method, thanks to N???levka Petr (DG);
+ * 03-Oct-2002 : Fixed errors reported by Checkstyle (DG);
+ * 13-Mar-2003 : Implemented Serializable (DG);
+ * 29-May-2003 : Fixed bug in addMonths method (DG);
+ * 04-Sep-2003 : Implemented Comparable.  Updated the isInRange javadocs (DG);
+ * 05-Jan-2005 : Fixed bug in addYears() method (1096282) (DG);
  * 
  */
 
@@ -44,26 +65,25 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * 
  *  An abstract class that defines our requirements for manipulating dates,
  *  without tying down a particular implementation.
- *  
+ *  <P>
  *  Requirement 1 : match at least what Excel does for dates;
  *  Requirement 2 : the date represented by the class is immutable;
- *  
+ *  <P>
  *  Why not just use java.util.Date?  We will, when it makes sense.  At times,
  *  java.util.Date can be *too* precise - it represents an instant in time,
  *  accurate to 1/1000th of a second (with the date itself depending on the
  *  time-zone).  Sometimes we just want to represent a particular day (e.g. 21
  *  January 2015) without concerning ourselves about the time of day, or the
  *  time-zone, or anything else.  That's what we've defined SerialDate for.
- *  
+ *  <P>
  *  You can call getInstance() to get a concrete subclass of SerialDate,
  *  without worrying about the exact implementation.
- *  
- *  From JCommon source code by David Gilbert, some fixes and refactored based 
- *  on Clean Code by Robert C. Martin.
  *	
+ *	<p>
+ *	From JCommon source code by David Gilbert with some fix codes 
+ *	provided by Robert C. Martin.
  *
  * @author David Gilbert
  */
@@ -790,7 +810,7 @@ public abstract class SerialDate implements Comparable,
      */
     public static SerialDate createInstance(final int day, final int month, 
                                             final int yyyy) {
-        return new SpreadsheetDate(day, month, yyyy);
+        return new JCSpreadsheetDate(day, month, yyyy);
     }
 
     /**
@@ -802,7 +822,7 @@ public abstract class SerialDate implements Comparable,
      * @return a instance of SerialDate.
      */
     public static SerialDate createInstance(final int serial) {
-        return new SpreadsheetDate(serial);
+        return new JCSpreadsheetDate(serial);
     }
 
     /**
@@ -816,7 +836,7 @@ public abstract class SerialDate implements Comparable,
 
         final GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(date);
-        return new SpreadsheetDate(calendar.get(Calendar.DATE),
+        return new JCSpreadsheetDate(calendar.get(Calendar.DATE),
                                    calendar.get(Calendar.MONTH) + 1,
                                    calendar.get(Calendar.YEAR));
 

@@ -77,68 +77,48 @@ public abstract class DayDate implements Comparable,Serializable{
      */
 //    private static final long serialVersionUID = -293716040467423637L;    
     
-    public static final DateFormatSymbols
-        DATE_FORMAT_SYMBOLS = new SimpleDateFormat().getDateFormatSymbols();    
+//    public static final DateFormatSymbols
+//        DATE_FORMAT_SYMBOLS = new SimpleDateFormat().getDateFormatSymbols();    
 
-    /** The number of days in a (non-leap) year up to the end of each month. */
+//    /** The number of days in a (non-leap) year up to the end of each month. */
 //    static final int[] AGGREGATE_DAYS_TO_END_OF_MONTH =
 //        {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
-
-    /** The number of days in a year up to the end of the preceding month. */
-    private static final int[] AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH =
-        {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 
     /** The number of days in a leap year up to the end of each month. */
 //    static final int[] LEAP_YEAR_AGGREGATE_DAYS_TO_END_OF_MONTH =
 //        {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366};
-
-    /** 
-     * The number of days in a leap year up to the end of the preceding month. 
-     */
-    private static final int[] 
-        LEAP_YEAR_AGGREGATE_DAYS_TO_END_OF_PRECEDING_MONTH =
-            {0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366};  
-
-    /**
-     * Returns an array of month names.
-     *
-     * @return an array of month names.
-     */
-//    public static String[] getMonthNames() {
-//    	return DATE_FORMAT_SYMBOLS.getMonths();
-//    }   
-
-    /**
-     * Determines whether or not the specified year is a leap year.
-     *
-     * @param yyyy  the year (in the range 1900 to 9999).
-     *
-     * @return <code>true</code> if the specified year is a leap year.
-     */
-//    public static boolean isLeapYear(int year) {
-//    	boolean fourth = year % 4 == 0;
-//		boolean hundredth = year % 100 == 0;
-//		boolean fourHundredth = year % 400 == 0;
-//		return fourth && (!hundredth || fourHundredth);
-//    }
-
-    /**
-     * Returns the number of the last day of the month, taking into account 
-     * leap years.
-     *
-     * @param month  the month.
-     * @param yyyy  the year (in the range 1900 to 9999).
-     *
-     * @return the number of the last day of the month.
-     */
-//    public static int lastDayOfMonth(Month month, int year) {
-//    	if(month == Month.FEBRUARY && isLeapYear(year)){
-//			return month.lastDay() + 1;
-//		}else {
-//			return month.lastDay();
-//		}
-//    }
     
+    /**
+     * Returns the serial number for the date, where 1 January 1900 = 2 (this
+     * corresponds, almost, to the numbering system used in Microsoft Excel for
+     * Windows and Lotus 1-2-3).
+     *
+     * @return the serial number for the date.
+     */
+    public abstract int getOrdinalDay();
+    
+    public abstract int getDayOfMonth();
+    
+    /**
+     * Returns the month (January = 1, February = 2, March = 3).
+     *
+     * @return the month of the year.
+     */
+    public abstract Month getMonth();
+    
+    /**
+     * Returns the year (assume a valid range of 1900 to 9999).
+     *
+     * @return the year.
+     */
+    public abstract int getYear();
+    
+    protected abstract Day getDayOfWeekForOrdinalZero();
+    
+ 
+    /**
+     * 若当前天数没有超过每月最后一天, 返回当前天数. 否则, 返回当月最后一天.
+     */
     int correctLastDayOfMonth(int day, Month month, int year){
     	int lastDayOfMonth = DateUtil.lastDayOfMonth(month, year);
     	if(day > lastDayOfMonth){
@@ -173,21 +153,20 @@ public abstract class DayDate implements Comparable,Serializable{
      * @return a new date.
      */
     public DayDate plusMonths(int months) {
-    	int thisMonthAsOrdinal = getMonth().toInt() - Month.JANUARY.toInt();
-    	int thisMonthAndYearAsOrdinal = 12 * getYear() + thisMonthAsOrdinal;
+    	//基于月份,算月的序数值
+    	int thisMonthAsOrdinal = getMonth().toInt() - Month.JANUARY.toInt();  //从0开始算
+    	int thisMonthAndYearAsOrdinal = 12 * getYear() + thisMonthAsOrdinal;  
     	int resultMonthAndYearAsOrdinal = thisMonthAndYearAsOrdinal + months;
-    	// ...
     	
-    	int thisMonthAsOrdinal = 12 * getYear() + getMonth().index - 1;
-    	int resultMonthAsOrdinal = thisMonthAsOrdinal + months;
+    	int resultYear = resultMonthAndYearAsOrdinal / 12;
     	
-    	int resultYear = resultMonthAsOrdinal / 12;
-    	Month resultMonth = Month.fromInt(resultMonthAsOrdinal % 12 + 1);
+    	//Month枚举类型月份索引下标从1开始
+    	int resultMonthAsOrdinal = resultMonthAndYearAsOrdinal % 12 + Month.JANUARY.toInt();
+    	Month resultMonth = Month.fromInt(resultMonthAsOrdinal);
     	
-    	int lastDayOfResultMonth = DateUtil.lastDayOfMonth(resultMonth, resultYear);
-    	int resultDay = Math.min(getDayOfMonth(), lastDayOfResultMonth);
+    	int resultDay = correctLastDayOfMonth(getDayOfMonth(), resultMonth, resultYear);
     	
-    	return DayDateFactory.makeDate(resultDay, resultMonth, resultYear);
+    	return DayDateFactory.makeDate(resultDay, resultMonth, resultYear);  	
     }
 
     /**
@@ -201,10 +180,8 @@ public abstract class DayDate implements Comparable,Serializable{
      */
     public DayDate plusYears(int years) {
     	int resultYear = getYear() + years;
-    	
-    	int lastDayOfMonthInResultYear = DateUtil.lastDayOfMonth(getMonth(), resultYear);
-    	int resultDay = Math.min(getDayOfMonth(), lastDayOfMonthInResultYear);
-    	return DayDateFactory.makeDate(resultDay, getMonth(), resultYear);    	
+    	int resultDay = correctLastDayOfMonth(getDayOfMonth(), getMonth(), getYear());
+    	return DayDateFactory.makeDate(resultDay, getMonth(), resultYear); 	
     }
 
     /**
@@ -277,16 +254,7 @@ public abstract class DayDate implements Comparable,Serializable{
     	int year = getYear();
     	int lastDay = DateUtil.lastDayOfMonth(month, year);
     	return DayDateFactory.makeDate(lastDay, month, year);    	
-    }    
-
-    /**
-     * Returns the serial number for the date, where 1 January 1900 = 2 (this
-     * corresponds, almost, to the numbering system used in Microsoft Excel for
-     * Windows and Lotus 1-2-3).
-     *
-     * @return the serial number for the date.
-     */
-    public abstract int getOrdinalDay();
+    } 
 
     /**
      * Returns a java.util.Date.  Since java.util.Date has more precision than
@@ -310,31 +278,17 @@ public abstract class DayDate implements Comparable,Serializable{
     	return String.format("%02d-%s-%d", getDayOfMonth(), getMonth(), getYear());
 //        return getDayOfMonth() + "-" + DayDate.monthCodeToString(getMonth())
 //                               + "-" + getYear();
-    }
+    }    
 
     /**
-     * Returns the year (assume a valid range of 1900 to 9999).
+     * Returns a code representing the day of the week.
+     * <P>
+     * The codes are defined in the {@link Day} enum as: 
+     * <code>SUNDAY</code>, <code>MONDAY</code>, <code>TUESDAY</code>, 
+     * <code>WEDNESDAY</code>, <code>THURSDAY</code>, <code>FRIDAY</code>, and 
+     * <code>SATURDAY</code>.
      *
-     * @return the year.
-     */
-    public abstract int getYear();
-
-    /**
-     * Returns the month (January = 1, February = 2, March = 3).
-     *
-     * @return the month of the year.
-     */
-    public abstract Month getMonth();
-
-    /**
-     * Returns the day of the month.
-     *
-     * @return the day of the month.
-     */
-    public abstract int getDayOfMonth();
-
-    /**
-     *
+     * @return A code representing the day of the week.
      */
     public Day getDayOfWeek(){
     	Day startingDay = getDayOfWeekForOrdinalZero();
@@ -342,7 +296,7 @@ public abstract class DayDate implements Comparable,Serializable{
     	return Day.fromInt((getOrdinalDay() + startingOffset) % 7 + 1);
     }
     
-    abstract Day getDayOfWeekForOrdinalZero();
+    
 
     /**
      * Returns the difference (in days) between this date and the specified 
@@ -416,18 +370,6 @@ public abstract class DayDate implements Comparable,Serializable{
 
     /**
      * Returns <code>true</code> if this {@link DayDate} is within the 
-     * specified range (INCLUSIVE).  The date order of d1 and d2 is not 
-     * important.
-     *
-     * @param d1  a boundary date for the range.
-     * @param d2  the other boundary date for the range.
-     *
-     * @return A boolean.
-     */
-    public abstract boolean isInRange(DayDate d1, DayDate d2);
-
-    /**
-     * Returns <code>true</code> if this {@link DayDate} is within the 
      * specified range (caller specifies whether or not the end-points are 
      * included).  The date order of d1 and d2 is not important.
      *
@@ -443,7 +385,5 @@ public abstract class DayDate implements Comparable,Serializable{
     	int right = Math.max(d1.getOrdinalDay(), d2.getOrdinalDay());
     	return interval.isIn(getOrdinalDay(), left, right);
     }
-
-
 
 }

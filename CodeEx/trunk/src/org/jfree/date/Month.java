@@ -14,7 +14,12 @@ public enum Month {
 	Month(int index) {
 		this.index = index;
 	}
-
+	
+	/**
+	 * 从月份的索引下标, 得到对应月份的枚举对象. 索引从1开始.
+	 * @param monthIndex
+	 * @return
+	 */
 	public static Month fromInt(int monthIndex) {
 		for (Month m : Month.values()) {
 			if (m.index == monthIndex)

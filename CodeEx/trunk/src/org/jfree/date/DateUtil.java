@@ -16,6 +16,13 @@ public class DateUtil {
 		return fourth && (!hundredth || fourHundredth);
 	}
 	
+	/**
+	 * 得到每月最后一天.
+	 * 若遇闰年, 二月最后一天计数加1.
+	 * @param month
+	 * @param year
+	 * @return
+	 */
 	public static int lastDayOfMonth(Month month, int year){
 		if(month == Month.FEBRUARY && isLeapYear(year)){
 			return month.lastDay() + 1;

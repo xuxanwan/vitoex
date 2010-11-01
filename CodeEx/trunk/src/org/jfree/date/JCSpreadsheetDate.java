@@ -84,7 +84,7 @@ import java.util.Date;
 public class JCSpreadsheetDate extends SerialDate {
 
     /** For serialization. */
-    private static final long serialVersionUID = -2039586705374454461L;
+//    private static final long serialVersionUID = -2039586705374454461L;
     
     /** 
      * The day number (1-Jan-1900 = 2, 2-Jan-1900 = 3, ..., 31-Dec-9999 = 

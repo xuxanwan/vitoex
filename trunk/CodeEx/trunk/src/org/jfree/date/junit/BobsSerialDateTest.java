@@ -321,8 +321,8 @@ public class BobsSerialDateTest extends TestCase {
 		assertEquals(d(31, DECEMBER, 1904), addDays(5 * 365, newYears));
 	}
 
-	private static SpreadsheetDate d(int day, int month, int year) {
-		return new SpreadsheetDate(day, month, year);
+	private static JCSpreadsheetDate d(int day, int month, int year) {
+		return new JCSpreadsheetDate(day, month, year);
 	}
 
 	public void testAddMonths() throws Exception {

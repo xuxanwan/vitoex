@@ -6,11 +6,24 @@ package org.vito.test;
  *
  */
 public class Test {
-
+	int value = 0;
+	
+	public int valueAdd(){
+		value = value + 1;
+		return value;		
+	}
+	
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		Test test = new Test();
+		System.out.println(test.valueAdd());
+		System.out.println(test.valueAdd());
+		System.out.println(test.valueAdd());
+		
 		String []strArray = new String[3];
 		for(String s : strArray){
 			System.out.println(s);
@@ -36,7 +49,7 @@ public class Test {
 		System.out.println(a);
 		System.out.println(b);
 		
-		Test test = new Test();
+//		Test test = new Test();
 		System.out.println("The class of " + test + " is " + test.getClass().getName());
 		System.out.println("The class of Test is " + Test.class.getName());
 	}
